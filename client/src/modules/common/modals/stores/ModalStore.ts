@@ -13,16 +13,16 @@ class ModalStore extends Store<IModalStore> {
 	}
 
 	show(id, options = {}){
-		this.set({ id, options, zindex: this.get().zindex + 1 }, `${id}.show`)
+		this.set({ id, options, zindex: this.get().zindex + 1 }, `show.success.${id}`)
 	}
 
 	hide(id?, options = {}){
 		
 		if(id){
-			this.set({ id, options, zindex: this.get().zindex - 1 }, `${id}.hide`)
+			this.set({ id, options, zindex: this.get().zindex - 1 }, `hide.success.${id}`)
 		}
 		else {
-			this.set({ id: '', zindex: 2000, options: {} }, 'hide')
+			this.set({ id: '', zindex: 2000, options: {} }, 'hide.success')
 		}
 	}
 

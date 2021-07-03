@@ -4,9 +4,16 @@
   import { modalStore } from '../../../common/modals/stores/ModalStore'
   import ThingOneModal from '../modals/ThingOneModal.svelte'
   import ThingTwoModal from '../modals/ThingTwoModal.svelte'
+  import Table from '../../../common/table/components/Table.svelte'
+  import { tableStore } from '../../../common/table/stores/TableStore'
+
 
   onMount(() => {
     userStore.validateAuth()
+    tableStore.setData('home', [{
+      thing1: '1',
+      thing2: '2'
+    }])
   })
 
   
@@ -24,6 +31,15 @@
       <button class="btn btn-outline-secondary" on:click={() => modalStore.show('thingTwo')}>Thing Two Modal</button>
     </div>
   </div>
+  <Table
+    id="home"
+    title= "things"
+    columns={[
+      { id: 'thing1', title: 'Thing One' },
+      { id: 'thing2', title: 'Thing Two' }
+    ]}
+  />
+
   <div class="row mt-2">
     <a href="/about">About</a>
   </div>

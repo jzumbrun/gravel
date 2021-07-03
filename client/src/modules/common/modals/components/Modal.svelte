@@ -18,9 +18,9 @@
   export let zindex: number = 2000
   export let buttons: IButton[] = []
 
-  subscribe(modalStore, showModal, `${id}.show`)
-  subscribe(modalStore, hideModal, `${id}.hide`)
-  subscribe(modalStore, hideModal, `hide`)
+  subscribe(modalStore, showModal, `show.success.${id}`)
+  subscribe(modalStore, hideModal, `hide.success.${id}`)
+  subscribe(modalStore, hideModal, `hide.success`)
 
   function showModal () {
     const modal = modalStore.get()
