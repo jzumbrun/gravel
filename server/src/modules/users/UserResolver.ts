@@ -122,7 +122,8 @@ export default class UserResolver extends BaseResolver {
 
     // Queries
     queries.users = {
-      type: GraphQLList(outputTypes.User),
+      args: { pagination: { type: inputTypes.Pagination } },
+      type: outputTypes.Paginated(outputTypes.User),
       resolve: BaseResolver.resolve(UserResolver, 'resolveUsers')
     }
 

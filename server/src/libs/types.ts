@@ -29,3 +29,14 @@ export interface ICreateScalar {
   validate?: (v: any) => boolean
   format?: (v: any) => any
 }
+
+export interface IPagination {
+  limit?: number
+  skip?: number
+  sort?: Record<string, 1|0>
+}
+
+export interface IPaginated<T> {
+  rows: T[]
+  count?: number
+}

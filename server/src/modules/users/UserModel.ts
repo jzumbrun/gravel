@@ -1,6 +1,7 @@
 import { randomBytes, pbkdf2Sync } from 'crypto'
 import { ObjectId } from 'mongodb'
 import BaseModel from '../../libs/BaseModel'
+import { IPagination, IPaginated } from '../../libs/types'
 
 export class User {
 
@@ -28,9 +29,11 @@ export default class UserModel extends BaseModel<User> {
   /**
    * Get Users
    */
-  async getUsers() {
-    const result = await this.getCollection().find()
-    return result.toArray()
+  async getUsers({ limit, skip, sort }: IPagination): Promise<IPaginated<User>> {
+    const rows = await this.getCollection().find({ limit, skip, sort})
+    const count = await this.getCollection().countDocuments()
+
+    return { rows: await rows.toArray(), count }
   }
   
   /**
