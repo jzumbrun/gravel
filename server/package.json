@@ -29,6 +29,8 @@
     "exec": "tsc && node ./build/server.js"
   },
   "jest": {
-    "testMatch": [ "**/build/tests/**/*.test.js" ]
+    "testMatch": [
+      "**/build/tests/**/*.test.js"
+    ]
   }
 }

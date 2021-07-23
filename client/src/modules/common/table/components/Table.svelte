@@ -25,8 +25,8 @@
   export let emptyResults: string = 'No results found'
   export let columns: any[] = []
   export let callbacks: any = {}
-  export let sortBy: number = undefined
-  export let sortDirection: string = ''
+  export let sortBy: number = columns[0].id
+  export let sortDirection: number = 1
   export let width: string = ''
   export let title: string = ''
   export let showHead: boolean = true
@@ -111,7 +111,8 @@
   }
 
   function loadData() {
-    tableStore.loadData({ id, query, variables })
+    const collation = { limit: limit, skip: (page - 1) * limit, sortBy, sortDirection, searchBy: "", searchValue: ""}
+    tableStore.loadData({ id, query, variables: {...variables, collation} })
   }
 
   function onDataSuccess(){
@@ -189,10 +190,10 @@
   function handleSortChange(columnIndex) {
 
     if(sortBy == columnIndex) {
-      sortDirection = sortDirection == '' ? '-' : ''
+      sortDirection = -1
     } else {
       sortBy = columnIndex
-      sortDirection = ''
+      sortDirection = 1
     }
 
     loadData()

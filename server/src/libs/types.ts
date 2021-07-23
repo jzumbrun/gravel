@@ -12,7 +12,7 @@ export interface IApp {
   info: GraphQLResolveInfo
 }
 
-export interface IParseScalar {
+export interface IParseScalarType {
   value?: any
   description: string
   ast?: any
@@ -21,7 +21,7 @@ export interface IParseScalar {
   format?: (v: any) => any
 }
 
-export interface ICreateScalar {
+export interface ICreateScalarType {
   name: string
   description: string 
   kind?: string
@@ -30,13 +30,11 @@ export interface ICreateScalar {
   format?: (v: any) => any
 }
 
-export interface IPagination {
+export interface ICollation {
   limit?: number
   skip?: number
-  sort?: Record<string, 1|0>
-}
-
-export interface IPaginated<T> {
-  rows: T[]
-  count?: number
+  sortBy?: string
+  sortDirection?: 1|-1
+  searchBy?: string
+  searchValue?: string
 }

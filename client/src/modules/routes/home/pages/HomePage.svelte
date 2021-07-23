@@ -7,13 +7,14 @@
   import Table from '../../../common/table/components/Table.svelte'
   import { tableStore } from '../../../common/table/stores/TableStore'
 
+  const query = 'query users($collation: Collation){ users(collation: $collation ) { _id firstName email }}'
 
   onMount(() => {
     userStore.validateAuth()
-    tableStore.setData('home', [{
-      thing1: '1',
-      thing2: '2'
-    }])
+    // tableStore.setData('home', [{
+    //   thing1: '1',
+    //   thing2: '2'
+    // }])
   })
 
   
@@ -33,11 +34,13 @@
   </div>
   <Table
     id="home"
-    title= "things"
+    title="things"
     columns={[
-      { id: 'thing1', title: 'Thing One' },
-      { id: 'thing2', title: 'Thing Two' }
+      { id: '_id', title: 'Id' },
+      { id: 'email', title: 'Email' },
+      { id: 'firstName', title: 'First Name' }
     ]}
+    query={query}
   />
 
   <div class="row mt-2">

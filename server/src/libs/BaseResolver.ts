@@ -1,7 +1,7 @@
 import { GraphQLError, GraphQLScalarType, GraphQLFieldResolver, GraphQLResolveInfo } from 'graphql'
 import Schema from './Schema'
 import Auth from './Auth'
-import { IServerRequest, IParseScalar, ICreateScalar, IApp } from './types'
+import { IServerRequest, IApp } from './types'
 
 export default class BaseResolver {
 
@@ -24,37 +24,6 @@ export default class BaseResolver {
       const resolve = new Resolver({ args, info })
       return resolve[func]()
     }
-  }
-
-  /**
-   * Parse Scalar
-   */
-   static parseScalar({value, description, ast, kind, validate, format}: IParseScalar): IParseScalar['format'] {
-
-    format = format || ((v: any) => v)
-    validate = validate || ((v: any) => true)
-  
-    if (ast) {
-      if (ast.kind === kind && validate(ast.value))
-        return format(ast.value)
-    }
-    else if (validate(value))
-      return format(value)
-    throw new GraphQLError(description)
-  }
-
-  /**
-   * Create Scalar
-   */
-  static createScalar({ name, description, kind, serialize, validate, format }: ICreateScalar): GraphQLScalarType {
-
-    return new GraphQLScalarType({
-      name: name,
-      description: description,
-      serialize: serialize || (function (value) { return value }),
-      parseValue: (value) => BaseResolver.parseScalar({ value, description, validate, format }) ,
-      parseLiteral: (ast) => BaseResolver.parseScalar({ ast, kind, description, validate, format })
-    })
   }
 
   /**

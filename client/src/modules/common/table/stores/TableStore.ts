@@ -19,11 +19,15 @@ class TableStore extends Store<ITableStore> {
 		super({ tables: undefined })
 	}
 
+	setStoreTable(s: ITableStore, id: string, data: Record<string, any>[]): ITableStore {
+		if(!s.tables) s.tables = { [id]: data }
+		else s.tables[id] = data
+		return s
+	}
+
 	setData(id: string, data: Record<string, any>[]) {
 		this.update(s => {
-			if(!s.tables) s.tables = { [id]: data }
-			else s.tables[id] = data
-			return s
+			return this.setStoreTable(s, id, data)
 		}, `setData.success.${id}`)
 	}
 
@@ -38,10 +42,9 @@ class TableStore extends Store<ITableStore> {
 		// Get data from server
 		if(query) {
 			const results = await this.graphQl<Record<string, unknown[]>>(query, variables)
-			if(results.errors.length) alertStore.add(results.errors)
+			if(results.errors?.length) alertStore.add(results.errors)
 			this.update(s => {
-				s.tables[id] = Object.values(results.data)[0] || [{}]
-				return s
+				return this.setStoreTable(s, 'home', Object.values(results.data)[0] || [])
 			}, `getData.success.${id}`)
 		} else {
 			this.update(s => s, `getData.success.${id}`)

@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLID, GraphQLString,
   GraphQLInputObjectType, GraphQLList, Kind,
-  GraphQLNonNull } from 'graphql'
+  GraphQLNonNull, GraphQLInt } from 'graphql'
 import BaseResolver from '../../libs/BaseResolver'
 import Schema from '../../libs/Schema'
 import Mailer from '../../libs/Mailer'
@@ -21,20 +21,19 @@ export default class UserResolver extends BaseResolver {
   /**
    * Types
    */
-  static types({ outputTypes, inputTypes, scalars, queries, mutations }: Schema) {
+  static types({ outputTypes, inputTypes, scalarTypes, queries, mutations, createScalarType }: Schema) {
 
     // Outputs
     outputTypes.User = new GraphQLObjectType({
       name: 'User',
-      fields: () => ({ 
+      fields: () => ({
         _id: { type: GraphQLID },
         firstName: { type: GraphQLString },
         lastName: { type: GraphQLString },
         email: { type: GraphQLString },
-        createdAt: { type: scalars.Date },
-        updatedAt: { type: scalars.Date },
-        deleteAt: { type: scalars.Date }
-
+        createdAt: { type: scalarTypes.Date },
+        updatedAt: { type: scalarTypes.Date },
+        deleteAt: { type: scalarTypes.Date }
       })
     })
 
@@ -56,47 +55,47 @@ export default class UserResolver extends BaseResolver {
     inputTypes.UserSignup = new GraphQLInputObjectType({
       name: 'UserSignup',
       fields: () => ({ 
-        firstName: { type: GraphQLNonNull(scalars.NonEmptyString) },
-        lastName: { type: GraphQLNonNull(scalars.NonEmptyString) },
-        email: { type: GraphQLNonNull(scalars.Email) },
-        password: { type: GraphQLNonNull(scalars.Password) }
+        firstName: { type: GraphQLNonNull(scalarTypes.NonEmptyString) },
+        lastName: { type: GraphQLNonNull(scalarTypes.NonEmptyString) },
+        email: { type: GraphQLNonNull(scalarTypes.Email) },
+        password: { type: GraphQLNonNull(scalarTypes.Password) }
       })
     })
 
     inputTypes.UserForgotPassword = new GraphQLInputObjectType({
       name: 'UserForgotPassword',
       fields: () => ({ 
-        email: { type: GraphQLNonNull(scalars.Email) }
+        email: { type: GraphQLNonNull(scalarTypes.Email) }
       })
     })
 
     inputTypes.UserSignin = new GraphQLInputObjectType({
       name: 'UserSignin',
       fields: () => ({ 
-        email: { type: GraphQLNonNull(scalars.Email) },
-        password: { type: GraphQLNonNull(scalars.Password) }
+        email: { type: GraphQLNonNull(scalarTypes.Email) },
+        password: { type: GraphQLNonNull(scalarTypes.Password) }
       })
     })
 
     inputTypes.UserUpdate = new GraphQLInputObjectType({
       name: 'UserUpdate',
       fields: () => ({ 
-        firstName: { type: scalars.NonEmptyString },
-        lastName: { type: scalars.NonEmptyString },
-        email: { type: scalars.Email },
-        password: { type: scalars.Password }
+        firstName: { type: scalarTypes.NonEmptyString },
+        lastName: { type: scalarTypes.NonEmptyString },
+        email: { type: scalarTypes.Email },
+        password: { type: scalarTypes.Password }
       })
     })
 
     // Scalars
-    scalars.NonEmptyString = BaseResolver.createScalar({
+    scalarTypes.NonEmptyString = createScalarType({
       name: 'NonEmptyString',
       description: 'Input must not be empty',
       kind: Kind.STRING,
       validate: (v: any) => v.length > 0
     })
 
-    scalars.Password = BaseResolver.createScalar({
+    scalarTypes.Password = createScalarType({
       name: 'Password',
       description: 'Password must be greater than 7 and less than 50',
       kind: Kind.STRING,
@@ -104,57 +103,53 @@ export default class UserResolver extends BaseResolver {
       validate: (v: any) => v.length > 7 && v.length < 50 
     })
 
-    scalars.Email = BaseResolver.createScalar({
+    scalarTypes.Email = createScalarType({
       name: 'Email',
       description: 'Email must contain a @ and a . character',
       kind: Kind.STRING,
       validate: (v: any) => /^\S+@\S+\.\S+$/.test(v)
     })
 
-    scalars.Date = BaseResolver.createScalar({
-      name: 'Date',
-      description: 'Email must contain a @ and a . character',
-      kind: Kind.STRING,
-      serialize: (v: any) => new Date(v).toJSON(),
-      validate: (v: any) => !isNaN((new Date(v)).getTime()),
-      format: (v: any) => new Date(v)
-    })
-
     // Queries
     queries.users = {
-      args: { pagination: { type: inputTypes.Pagination } },
-      type: outputTypes.Paginated(outputTypes.User),
-      resolve: BaseResolver.resolve(UserResolver, 'resolveUsers')
+      args: { collation: { type: inputTypes.Collation } },
+      type: GraphQLList(outputTypes.User),
+      resolve: this.resolve(UserResolver, 'resolveUsers')
+    }
+
+    queries.usersCount = {
+      type: GraphQLInt,
+      resolve: this.resolve(UserResolver, 'resolveUsers')
     }
 
     queries.self = {
       type: outputTypes.User,
-      resolve: BaseResolver.resolve(UserResolver, 'resolveSelf')
+      resolve: this.resolve(UserResolver, 'resolveSelf')
     }
 
     // Mutations
     mutations.signUp = {
       args: { user: { type: inputTypes.UserSignup } },
       type: outputTypes.Token,
-      resolve: BaseResolver.resolve(UserResolver, 'resolveSignup')
+      resolve: this.resolve(UserResolver, 'resolveSignup')
     }
 
     mutations.signIn = {
       args: { user: { type: inputTypes.UserSignin } },
       type: outputTypes.Token,
-      resolve: BaseResolver.resolve(UserResolver, 'resolveSignin')
+      resolve: this.resolve(UserResolver, 'resolveSignin')
     }
 
     mutations.forgotPassword = {
       args: { user: { type: inputTypes.UserForgotPassword } },
       type: outputTypes.Message,
-      resolve: BaseResolver.resolve(UserResolver, 'resolveForgotPassword')
+      resolve: this.resolve(UserResolver, 'resolveForgotPassword')
     }
 
     mutations.updateSelf = {
       args: { user: { type: inputTypes.UserUpdate } },
       type: outputTypes.Token,
-      resolve: BaseResolver.resolve(UserResolver, 'resolveUpdateSelf')
+      resolve: this.resolve(UserResolver, 'resolveUpdateSelf')
     }
   }
 
@@ -211,8 +206,19 @@ export default class UserResolver extends BaseResolver {
    */
   resolveUsers(): Promise<Partial<User>[]> {
     const session = this.getAuth().getSession()
+    if(session?.auth?.includes('admin')) {
+      return this.userModel.getUsers(this.getArgs())
+    }
+    throw Error('Requires admin access!')
+  }
+
+  /**
+   * Resolve Users Count
+   */
+  resolveUsersCount(): Promise<number> {
+    const session = this.getAuth().getSession()
     if(session?.auth?.includes('admin'))
-      return this.userModel.getUsers()
+      return this.userModel.getUsersCount()
     throw Error('Requires admin access!')
   }
 

@@ -1,5 +1,5 @@
-import { GraphQLObjectType, GraphQLString, GraphQLType,
-  GraphQLInputObjectType, GraphQLList, GraphQLNonNull, GraphQLInt } from 'graphql'
+import { Kind, GraphQLString,
+  GraphQLInputObjectType, GraphQLNonNull, GraphQLInt } from 'graphql'
 import BaseResolver from '../../libs/BaseResolver'
 import Schema from '../../libs/Schema'
 
@@ -8,25 +8,27 @@ export default class RootResolver extends BaseResolver {
   /**
    * Types
    */
-  static types({ outputTypes, inputTypes, scalars, queries, mutations }: Schema) {
-
-    // Outputs
-    outputTypes.Paginated = (outputType: GraphQLType) => new GraphQLObjectType({
-      name: 'Paginated',
+  static types({ inputTypes, scalarTypes, createScalarType }: Schema) {
+    // Inputs
+    inputTypes.Collation = new GraphQLInputObjectType({
+      name: 'Collation',
       fields: () => ({ 
-        rows: { type: GraphQLList(outputType) },
-        count: { type: GraphQLInt }
+        limit: { type: GraphQLInt },
+        skip: { type: GraphQLInt },
+        sortBy: { type: GraphQLString},
+        sortDirection: { type:  GraphQLInt },
+        searchBy: { type: GraphQLString},
+        searchValue: { type: GraphQLString},
       })
     })
-    
-    // Inputs
-    inputTypes.Pagination = new GraphQLInputObjectType({
-      name: 'Pagination',
-      fields: () => ({ 
-        limit: { type: GraphQLNonNull(GraphQLInt) },
-        skip: { type: GraphQLNonNull(GraphQLInt) },
-        sort: { type: GraphQLNonNull(GraphQLString) }
-      })
+
+    scalarTypes.Date = createScalarType({
+      name: 'Date',
+      description: 'Date is not valid.',
+      kind: Kind.STRING,
+      serialize: (v: any) => new Date(v).toJSON(),
+      validate: (v: any) => !isNaN((new Date(v)).getTime()),
+      format: (v: any) => new Date(v)
     })
 
   }
