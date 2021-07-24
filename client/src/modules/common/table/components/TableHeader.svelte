@@ -2,7 +2,7 @@
   export let column
   export let index: number
   export let sortBy: number
-  export let sortDirection: string
+  export let sortDirection: number
 
   let iconName = 'sort', 
     sortIcon = null, 
@@ -11,7 +11,7 @@
     width = column.width || 100
 
   if(index == sortBy) {
-    iconName = (sortDirection == '') ? 'sort-by-attributes' : 'sort-by-attributes-alt'
+    iconName = (sortDirection == 1) ? 'sort-by-attributes' : 'sort-by-attributes-alt'
   }
 
   // if(column.sortable != false) {
@@ -22,13 +22,14 @@
   // }
 </script>
 
-<!-- on:click={onClick} -->
-<!-- {sortIcon} -->
-
 <th
   class={column.headerCellClass || ''}
 >
   {column.title}
+  {#if column.sortable != false}
+    <!--on:click={onClick}-->
+    <span class={'pull-right ' + iconName}></span>
+  {/if}
 </th>
 
 <style>

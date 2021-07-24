@@ -1,19 +1,46 @@
 <script lang="ts">
-  export let onSearchChange: (search: string) => void
-  export let searchPlaceholder: string
-  export let search: string
+  import Dropdown from '../../dropdown/components/Dropdown.svelte'
 
-  function handleChange(e){
-    search = e.target.value
-    onSearchChange(search)
+  export let onSearchChange: (by: string, value: string) => void
+  export let searchPlaceholder: string
+  export let searchList: string[]
+  export let by: string
+  export let value: string
+
+  function handleBy(e: Event){
+    by = (e.target as HTMLInputElement).value
+    onSearchChange(by, value)
+  }
+
+  function handleValue(e: Event){
+    value = (e.target as HTMLInputElement).value
+    onSearchChange(by, value)
   }
 </script>
 
-<input 
-  type="search"
-  class="form-control"
-  value={search}
-  placeholder={searchPlaceholder}
-  on:change={handleChange}
-/>
- 
+<div class="input-group">
+  <input 
+    type="search"
+    class="form-control"
+    value={value}
+    placeholder={searchPlaceholder}
+    on:change={handleValue}
+  />
+
+
+  <Dropdown
+    trigger={{label: ''}}
+    buttonClass="buttonClass"
+    links={searchList.map((text) => {
+      return {text, handleClick: handleBy}
+    })}
+  />
+</div>
+
+<style>
+  :global(.dropdown .buttonClass) {
+    padding: 23px;
+    border-top-left-radius: 0;
+    border-bottom-left-radius: 0;
+  }
+</style>

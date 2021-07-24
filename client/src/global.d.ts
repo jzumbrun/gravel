@@ -7,7 +7,7 @@ interface IRoute {
 interface IDropdownLinks {
     text?: string
     divider?: boolean
-    handleClick?: () => void
+    handleClick?: (e: Event) => void
     label?: string
     to?: string
 }

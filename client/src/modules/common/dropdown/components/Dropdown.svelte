@@ -2,6 +2,7 @@
   import { uuid } from '../../../lib/helpers'
   export let links: IDropdownLinks[]
   export let trigger
+  export let buttonClass: string
 
   const id = uuid()
   let show = false
@@ -13,7 +14,7 @@
 </script>
 
 <div id={id} class="dropdown">
-  <button class="btn btn-secondary dropdown-toggle" type="button" on:click={handleClick}>
+  <button class="btn btn-secondary dropdown-toggle {buttonClass}" type="button" on:click={handleClick}>
     {trigger.label}
   </button>
   {#if show}

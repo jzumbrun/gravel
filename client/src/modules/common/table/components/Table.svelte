@@ -9,12 +9,12 @@
   import TableHeader from './TableHeader.svelte'
 
   let start: number = 0
-  let limit: number = 10
+  let limit: number = 6
   let total: number = 0
   let page: number = 1
   let pages: number = 1
-  let filters = []
-  let search: string = ''
+  let searchBy: string = ''
+  let searchValue: string = ''
   let pageInfo: 'no results'
   let show: boolean = true
   let rows = []
@@ -23,11 +23,10 @@
   export let query: string = ''
   export let variables: Record<string, any> = {}
   export let emptyResults: string = 'No results found'
-  export let columns: any[] = []
+  export let columns: {id: string, title: string}[] = []
   export let callbacks: any = {}
-  export let sortBy: number = columns[0].id
+  export let sortBy: string = columns[0].id
   export let sortDirection: number = 1
-  export let width: string = ''
   export let title: string = ''
   export let showHead: boolean = true
   export let showPagination: boolean = true
@@ -41,7 +40,6 @@
   subscribe(tableStore, onRefresh, `refresh.success.${id}`)
 
   onMount(() => {
-    loadSettings()
     loadData()
   })
 
@@ -53,63 +51,6 @@
     loadData()
   }
 
-  function loadSettings() {
-
-    const key = `${id}.table.settings`
-    const settingsObjStorage = localStorage.getItem(key)
-    let settingsObj = {}
-
-    if(settingsObjStorage) {
-      try {
-        settingsObj = JSON.parse(settingsObjStorage)
-      } catch(err) {
-        settingsObj = {}
-      }
-    } else {
-      settingsObj = {}
-    }
-
-    // for(const k in settingsObj) {
-    //   this[k] = settingsObj[key]
-    // }
-  }
-
-  // save some things to local storage
-  function storeSettings() {
-    let settingsObj = JSON.stringify({
-      start,
-      limit,
-      page,
-      search,
-      sortBy,
-      sortDirection
-    })
-
-    let key = `table.settings.${id}`
-
-    localStorage.setItem(key, settingsObj)
-  }
-
-  function getRequestParams() {
-    return {
-      columns: columns.map((col) => {
-        // send only column key and title
-        return {
-          data: col.data,
-          title: col.title
-        }
-      }),
-      start,
-      limit,
-      search: {
-        value: search
-      },
-      sortBy,
-      sortDirection,
-      filters
-    }
-  }
-
   function loadData() {
     const collation = { limit: limit, skip: (page - 1) * limit, sortBy, sortDirection, searchBy: "", searchValue: ""}
     tableStore.loadData({ id, query, variables: {...variables, collation} })
@@ -117,20 +58,13 @@
 
   function onDataSuccess(){
     const data = tableStore.getData(id)
-    total = parseInt(data.filtered)
     let indexFirst = start + 1
     let indexLast = start + limit
     indexLast = total < indexLast ? total : indexLast
 
     let pageInfo = `${indexFirst}-${indexLast} of ${total}`
-    if(data.filtered == 0) {
-      pageInfo = 'no results'
-    }
-
-    storeSettings()
 
     rows = onData(data)
-    total = data.filtered
     pages = limit > 0 ? Math.ceil(total / limit) : 0
     show = !showEmpty && total === 0 ? false : true
   }
@@ -144,16 +78,17 @@
     return data
   }
 
-  function handleLimitChange(e) {
+  function handleLimitChange(e: InputEvent) {
     
-    limit = parseInt(e.target.value)
+    limit = parseInt((e.target as HTMLInputElement).value)
     start = 0
     page = 1
     loadData()
   }
 
-  function handleSearchChange(e) {
-    search = e.target.value
+  function handleSearchChange(by, value) {
+    searchBy = by
+    searchValue = value
     start = 0
     page = 1
     loadData()
@@ -199,11 +134,6 @@
     loadData()
   }
 
-  function handleQuickFilterChange(filter) {
-    filters = [filter]
-    loadData()
-  }
-
 </script>
 
 
@@ -221,15 +151,17 @@
         <div class="col" >
           <TableSearch
             searchPlaceholder={searchPlaceholder}
-            search={search}
-            onSearchChange={handleSearchChange.bind(this)}
+            by={searchBy}
+            value={searchValue}
+            searchList={columns.map(({title}) => title)}
+            onSearchChange={handleSearchChange}
           />
         </div>
       {/if}
       {#if showPagination}
         <div class="col">
           <TableLimit
-            onLimitChange={handleLimitChange.bind(this)}
+            onLimitChange={handleLimitChange}
             limit={limit}
           />
         </div>
