@@ -7,7 +7,7 @@
   import Table from '../../../common/table/components/Table.svelte'
   import { tableStore } from '../../../common/table/stores/TableStore'
 
-  const query = 'query users($collation: Collation){ users(collation: $collation ) { _id firstName email }}'
+  const query = 'query users($collation: Collation){ users(collation: $collation ) { _id firstName email } $$usersTotal }'
 
   onMount(() => {
     userStore.validateAuth()

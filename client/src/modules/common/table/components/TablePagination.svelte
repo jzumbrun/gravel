@@ -5,27 +5,49 @@
   export let page = 1
   export let pages = 0
 
-  let prevUnavailable = page == 1 ? 'unavailable' : 'available'
-  let nextUnavailable = page >= pages ? 'unavailable' : 'available'
+  $:prevAvailable = page !== 1
+  $:nextAvailable = page < pages
 
 </script>
 
-<div class="pagination-centered">
+<div class="pagination-centered mt-2">
   <ul class="pagination">
-    <li class={'arrow ' + prevUnavailable}>
-      <button on:click={(e) => onChange(e, 'first')}>«</button>
-    </li>
-    <li class={'table-button-prev ' + prevUnavailable}>
-      <button onClick={(e) => onChange(e, 'previous')}>&lt;</button>
+    {#if prevAvailable}
+      <li class={'arrow'}>
+        <button class="btn" on:click={(e) => onChange(e, 'first')}>«</button>
       </li>
-    <li class="table-info unavailable" >
+      <li class={'button-prev'}>
+        <button class="btn" on:click={(e) => onChange(e, 'previous')}>&lt;</button>
+      </li>
+    {/if}
+    <li class="page-info unavailable" >
       {pageInfo}
     </li>
-    <li class={'table-button-next ' + nextUnavailable}>
-      <button onClick={(e) => onChange(e, 'next')}>&gt;</button>
-    </li>
-    <li class={'arrow ' + nextUnavailable}>
-      <button onClick={(e) => onChange(e, 'last')}>»</button>
-    </li>
+    {#if nextAvailable}
+      <li class={'button-next '}>
+        <button class="btn" on:click={(e) => onChange(e, 'next')}>&gt;</button>
+      </li>
+    
+      <li class={'arrow'}>
+        <button class="btn" on:click={(e) => onChange(e, 'last')}>»</button>
+      </li>
+    {/if}
   </ul>
 </div>
+
+
+<style>
+
+  button {
+    padding: 2px 8px;
+    margin: 0px 3px 0px 3px;
+    border: 1px solid rgba(255,255,255,.4);
+    border-radius: .5rem;
+  }
+
+  .page-info {
+    padding: 2px 8px;
+    margin: 0px 3px 0px 3px;
+  }
+  
+</style>

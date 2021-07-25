@@ -3,7 +3,10 @@ import { alertStore } from '../../alerts/stores/AlertStore'
 
 interface ITableStore {
 	tables?: {
-		[key: string]: Record<string, any>[]
+		[key: string]: {
+			rows: Record<string, any>[]
+			total: number
+		}
 	}
 }
 
@@ -19,21 +22,21 @@ class TableStore extends Store<ITableStore> {
 		super({ tables: undefined })
 	}
 
-	setStoreTable(s: ITableStore, id: string, data: Record<string, any>[]): ITableStore {
-		if(!s.tables) s.tables = { [id]: data }
-		else s.tables[id] = data
+	setStoreTable(s: ITableStore, id: string, rows: Record<string, any>[], total: number = 0): ITableStore {
+		if(!s.tables) s.tables = { [id]: { rows, total} }
+		else s.tables[id] = { rows, total}
 		return s
 	}
 
-	setData(id: string, data: Record<string, any>[]) {
+	setData(id: string, rows: Record<string, any>[]) {
 		this.update(s => {
-			return this.setStoreTable(s, id, data)
+			return this.setStoreTable(s, id, rows, rows.length )
 		}, `setData.success.${id}`)
 	}
 
 	getData(id: string) {
 		const data = this.get().tables
-		if(!data) return []
+		if(!data) return { rows: [], total: 0}
 		return this.get().tables[id]
 	}
 
@@ -43,8 +46,10 @@ class TableStore extends Store<ITableStore> {
 		if(query) {
 			const results = await this.graphQl<Record<string, unknown[]>>(query, variables)
 			if(results.errors?.length) alertStore.add(results.errors)
+
 			this.update(s => {
-				return this.setStoreTable(s, 'home', Object.values(results.data)[0] || [])
+				const [rows, total] = Object.values(results.data) as [any[], number]
+				return this.setStoreTable(s, 'home', rows, total || s.tables[id].total)
 			}, `getData.success.${id}`)
 		} else {
 			this.update(s => s, `getData.success.${id}`)

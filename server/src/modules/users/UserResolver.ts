@@ -117,9 +117,9 @@ export default class UserResolver extends BaseResolver {
       resolve: this.resolve(UserResolver, 'resolveUsers')
     }
 
-    queries.usersCount = {
+    queries.usersTotal = {
       type: GraphQLInt,
-      resolve: this.resolve(UserResolver, 'resolveUsers')
+      resolve: this.resolve(UserResolver, 'resolveUsersTotal')
     }
 
     queries.self = {
@@ -213,12 +213,12 @@ export default class UserResolver extends BaseResolver {
   }
 
   /**
-   * Resolve Users Count
+   * Resolve Users Total
    */
-  resolveUsersCount(): Promise<number> {
+  resolveUsersTotal(): Promise<number> {
     const session = this.getAuth().getSession()
     if(session?.auth?.includes('admin'))
-      return this.userModel.getUsersCount()
+      return this.userModel.getUsersTotal()
     throw Error('Requires admin access!')
   }
 

@@ -35,9 +35,9 @@ export default class UserModel extends BaseModel<User> {
   }
 
   /**
-   * Get Users
+   * Get Users Total
    */
-  async getUsersCount(): Promise<number> {
+  async getUsersTotal(): Promise<number> {
     return await this.getCollection().countDocuments()
   }
   

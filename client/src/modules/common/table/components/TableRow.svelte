@@ -1,12 +1,9 @@
 <script lang="ts">
   import TableCell from './TableCell.svelte'
+  import type { IColumn } from './types'
 
   export let row: Record<string, any>
-  export let columns: {
-    id: string;
-    class: string;
-    cellFormat: any;
-  }[]
+  export let columns: IColumn[]
   export let rowFormat: (key: string, row: Record<string, any>) => void
 
 </script>

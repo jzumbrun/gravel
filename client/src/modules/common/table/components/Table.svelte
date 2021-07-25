@@ -7,15 +7,16 @@
   import TableSearch from './TableSearch.svelte'
   import TableRow from './TableRow.svelte'
   import TableHeader from './TableHeader.svelte'
+  import type { IColumn } from './types'
 
   let start: number = 0
-  let limit: number = 6
+  let limit: number = 5
   let total: number = 0
   let page: number = 1
-  let pages: number = 1
+  let pages: number = 0
   let searchBy: string = ''
   let searchValue: string = ''
-  let pageInfo: 'no results'
+  let pageInfo: string = 'no results'
   let show: boolean = true
   let rows = []
 
@@ -23,7 +24,7 @@
   export let query: string = ''
   export let variables: Record<string, any> = {}
   export let emptyResults: string = 'No results found'
-  export let columns: {id: string, title: string}[] = []
+  export let columns: IColumn[] = []
   export let callbacks: any = {}
   export let sortBy: string = columns[0].id
   export let sortDirection: number = 1
@@ -36,11 +37,10 @@
   export let rowFormat: () => void = undefined
   
   subscribe(tableStore, onDataSuccess, [`getData.success.${id}`, `setData.success.${id}`])
-
   subscribe(tableStore, onRefresh, `refresh.success.${id}`)
 
   onMount(() => {
-    loadData()
+    loadData(true)
   })
 
   function onRefresh(){
@@ -48,34 +48,33 @@
     // so the table does not flash in and out
     // But only if we do not have a unique id
     if(!id) rows = []
-    loadData()
+    loadData(true)
   }
 
-  function loadData() {
+  function loadData(getTotal: boolean = false) {
     const collation = { limit: limit, skip: (page - 1) * limit, sortBy, sortDirection, searchBy: "", searchValue: ""}
-    tableStore.loadData({ id, query, variables: {...variables, collation} })
+    tableStore.loadData({ 
+      id,
+      query: getTotal ? query.replace('$$', '') : query.replace(query.match(/\$\$(\w)+/)[0], ''),
+      variables: {...variables, collation} 
+    })
   }
 
   function onDataSuccess(){
     const data = tableStore.getData(id)
-    let indexFirst = start + 1
-    let indexLast = start + limit
-    indexLast = total < indexLast ? total : indexLast
-
-    let pageInfo = `${indexFirst}-${indexLast} of ${total}`
-
-    rows = onData(data)
-    pages = limit > 0 ? Math.ceil(total / limit) : 0
+    rows = onData(data.rows)
+    total = data.total
     show = !showEmpty && total === 0 ? false : true
+    setPageInfo()
   }
 
-  function onData(data) {
+  function onData(rows) {
 
     if (callbacks.onData) {
-      data = callbacks.onData(data)
+      rows = callbacks.onData(rows)
     }
 
-    return data
+    return rows
   }
 
   function handleLimitChange(e: InputEvent) {
@@ -95,8 +94,21 @@
 
   }
 
+  function setPageInfo() {
+
+    pages = Math.ceil(total / limit)
+
+    if(start < 0) start = 0
+
+    page = start > 0 ? ((start / limit) + 1) : 1
+
+    let indexFirst = start + 1
+    let indexLast = start + limit
+    indexLast = total < indexLast ? total : indexLast
+    pageInfo = `${indexFirst}-${indexLast} of ${total}`
+  }
+
   function handlePageChange(e, direction) {
-    const pages = limit > 0 ? Math.ceil(total / limit) : 0
 
     switch(direction) {
       case 'first':
@@ -113,12 +125,7 @@
         break
     }
 
-    if(start < 0) {
-      start = 0
-    }
-
-    page = start > 0 ? ((start / limit) + 1) : 1
-
+    setPageInfo()
     loadData()
   }
 
@@ -175,9 +182,8 @@
         {#if showHead}
           <thead>
             <tr>
-              {#each columns as column, index}
+              {#each columns as column}
                 <TableHeader 
-                  index={index}
                   column={column}
                   sortBy={sortBy}
                   sortDirection={sortDirection}
@@ -201,15 +207,16 @@
         </tbody>
       </table>
 
-      {#if showPagination && total > limit}
-        <TablePagination
-          pageInfo={pageInfo}
-          onChange={handlePageChange}
-          page={page}
-          pages={pages}
-        />
-      {/if}
     </div>
+
+    {#if showPagination && total > limit}
+      <TablePagination
+        pageInfo={pageInfo}
+        onChange={handlePageChange}
+        page={page}
+        pages={pages}
+      />
+    {/if}
   </div>
 {/if}
 

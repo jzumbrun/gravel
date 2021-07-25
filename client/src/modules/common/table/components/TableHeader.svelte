@@ -1,7 +1,6 @@
 <script lang="ts">
   export let column
-  export let index: number
-  export let sortBy: number
+  export let sortBy: string
   export let sortDirection: number
 
   let iconName = 'sort', 
@@ -10,7 +9,7 @@
     onClick = false, 
     width = column.width || 100
 
-  if(index == sortBy) {
+  if(column.id == sortBy) {
     iconName = (sortDirection == 1) ? 'sort-by-attributes' : 'sort-by-attributes-alt'
   }
 

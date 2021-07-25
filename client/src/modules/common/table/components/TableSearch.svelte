@@ -7,15 +7,12 @@
   export let by: string
   export let value: string
 
-  function handleBy(e: Event){
+  function handleBy(e: Event) {
+    debugger
     by = (e.target as HTMLInputElement).value
     onSearchChange(by, value)
   }
 
-  function handleValue(e: Event){
-    value = (e.target as HTMLInputElement).value
-    onSearchChange(by, value)
-  }
 </script>
 
 <div class="input-group">
@@ -24,9 +21,7 @@
     class="form-control"
     value={value}
     placeholder={searchPlaceholder}
-    on:change={handleValue}
   />
-
 
   <Dropdown
     trigger={{label: ''}}
