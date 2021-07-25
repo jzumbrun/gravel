@@ -2,5 +2,6 @@ export interface IColumn{
   id: string
   title?: string
   class?: string
-  cellFormat?: any
+  cellFormat?: any,
+  sortable?: boolean
 }

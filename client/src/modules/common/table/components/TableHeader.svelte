@@ -1,33 +1,32 @@
 <script lang="ts">
-  export let column
+  import type { IColumn } from './types'
+
+  export let column: IColumn
   export let sortBy: string
   export let sortDirection: number
+  export let onChange: (sortBy: string, sortDirection: number) => void
 
-  let iconName = 'sort', 
-    sortIcon = null, 
-    cursor = 'inherit', 
-    onClick = false, 
-    width = column.width || 100
+  $:icon = column.id !== sortBy ? '' : getIcon()
 
-  if(column.id == sortBy) {
-    iconName = (sortDirection == 1) ? 'sort-by-attributes' : 'sort-by-attributes-alt'
+  function getIcon() {
+    return sortDirection == 1 ? '▲' : '▼'
   }
 
-  // if(column.sortable != false) {
-  //   // if the column is sortable, make the header cell clickable
-  //   sortIcon = (<span class={'pull-right ' + iconName}></span>)
-  //   cursor = 'pointer'
-  //   onClick = handleSortChange.bind(this, index)
-  // }
+  function handleChange() {
+    sortDirection = sortDirection === 1 ? -1 : 1
+    icon = getIcon()
+    onChange(column.id, sortDirection)
+  }
+
 </script>
 
-<th
-  class={column.headerCellClass || ''}
->
-  {column.title}
-  {#if column.sortable != false}
-    <!--on:click={onClick}-->
-    <span class={'pull-right ' + iconName}></span>
+<th>
+  
+  {#if column.sortable}
+    <button class={'btn'} on:click={handleChange}>{column.title}</button>
+    <span>{icon}</span>
+  {:else}
+    {column.title}
   {/if}
 </th>
 
@@ -36,5 +35,10 @@
     cursor: cursor;
     white-space: 'normal';
     width: width;
+  }
+
+  button {
+    margin-bottom: 3px;
+    padding: 0 5px;
   }
 </style>

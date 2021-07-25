@@ -3,19 +3,19 @@
   import type { IDropdownLink } from '../../dropdown/components/types'
   import type { IColumn } from './types'
 
-  export let onSearchChange: (by: string, value: string) => void
+  export let onChange: (by: string, value: string) => void
   export let searchPlaceholder: string
   export let columns: IColumn[]
   let value: string = ''
 
   function handleBy(link: IDropdownLink) {
     if(value)
-      onSearchChange(link.value, value)
+      onChange(link.value, value)
   }
 
   function handleClear(link: IDropdownLink) {
       value = ''
-      onSearchChange('', '')
+      onChange('', '')
   }
 
 </script>

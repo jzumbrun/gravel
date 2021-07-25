@@ -36,9 +36,9 @@
     id="home"
     title="things"
     columns={[
-      { id: '_id', title: 'Id' },
-      { id: 'email', title: 'Email' },
-      { id: 'firstName', title: 'First Name' }
+      { id: '_id', title: 'Id'},
+      { id: 'email', title: 'Email', sortable: true },
+      { id: 'firstName', title: 'First Name', sortable: true }
     ]}
     query={query}
   />

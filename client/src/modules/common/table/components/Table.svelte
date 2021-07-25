@@ -129,14 +129,9 @@
     loadData()
   }
 
-  function handleSortChange(columnIndex) {
-
-    if(sortBy == columnIndex) {
-      sortDirection = -1
-    } else {
-      sortBy = columnIndex
-      sortDirection = 1
-    }
+  function handleSortChange(by: string, direction: number) {
+    sortBy = by
+    sortDirection = direction
 
     loadData()
   }
@@ -159,14 +154,14 @@
           <TableSearch
             searchPlaceholder={searchPlaceholder}
             columns={columns}
-            onSearchChange={handleSearchChange}
+            onChange={handleSearchChange}
           />
         </div>
       {/if}
       {#if showPagination}
         <div class="col">
           <TableLimit
-            onLimitChange={handleLimitChange}
+            onChange={handleLimitChange}
             limit={limit}
           />
         </div>
@@ -185,6 +180,7 @@
                   column={column}
                   sortBy={sortBy}
                   sortDirection={sortDirection}
+                  onChange={handleSortChange}
                 />
               {/each}
             </tr>
