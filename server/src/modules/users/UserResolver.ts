@@ -118,6 +118,7 @@ export default class UserResolver extends BaseResolver {
     }
 
     queries.usersTotal = {
+      args: { collation: { type: inputTypes.Collation } },
       type: GraphQLInt,
       resolve: this.resolve(UserResolver, 'resolveUsersTotal')
     }
@@ -218,7 +219,7 @@ export default class UserResolver extends BaseResolver {
   resolveUsersTotal(): Promise<number> {
     const session = this.getAuth().getSession()
     if(session?.auth?.includes('admin'))
-      return this.userModel.getUsersTotal()
+      return this.userModel.getUsersTotal(this.getArgs())
     throw Error('Requires admin access!')
   }
 

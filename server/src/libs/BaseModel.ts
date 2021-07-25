@@ -27,10 +27,18 @@ export default class BaseModel<TRecord> {
    */
    collate(query: FilterQuery<TRecord>, collation: ICollation) {
     if(collation.searchBy && collation.searchValue)
-      query = {...query, [collation.searchBy]: collation.searchValue}
+      query = {...query, [collation.searchBy]: new RegExp(collation.searchValue, 'i')}
     return this.getCollection().find(query).limit(collation.limit || 20)
       .skip(collation.skip || 0)
       .sort({[collation.sortBy || '_id']: collation.sortDirection || 1})
   }
 
+  /**
+   * Collate total
+   */
+  collateTotal(query: FilterQuery<TRecord>, collation: ICollation) {
+    if(collation.searchBy && collation.searchValue)
+      query = {...query, [collation.searchBy]: new RegExp(collation.searchValue, 'i')}
+    return this.getCollection().countDocuments(query)
+  }
 }

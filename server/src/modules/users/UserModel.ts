@@ -37,8 +37,8 @@ export default class UserModel extends BaseModel<User> {
   /**
    * Get Users Total
    */
-  async getUsersTotal(): Promise<number> {
-    return await this.getCollection().countDocuments()
+  async getUsersTotal({collation}: Record<string, ICollation>): Promise<number> {
+    return this.collateTotal({}, collation)
   }
   
   /**

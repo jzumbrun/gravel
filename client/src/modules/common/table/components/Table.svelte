@@ -10,7 +10,7 @@
   import type { IColumn } from './types'
 
   let start: number = 0
-  let limit: number = 5
+  let limit: number = 20
   let total: number = 0
   let page: number = 1
   let pages: number = 0
@@ -52,10 +52,10 @@
   }
 
   function loadData(getTotal: boolean = false) {
-    const collation = { limit: limit, skip: (page - 1) * limit, sortBy, sortDirection, searchBy: "", searchValue: ""}
+    const collation = { limit: limit, skip: (page - 1) * limit, sortBy, sortDirection, searchBy, searchValue}
     tableStore.loadData({ 
       id,
-      query: getTotal ? query.replace('$$', '') : query.replace(query.match(/\$\$(\w)+/)[0], ''),
+      query: getTotal ? query.replace('<total>', '').replace('</total>', '') : query.replace(query.match(/<total>(.*)<\/total>/m)[0], ''),
       variables: {...variables, collation} 
     })
   }
@@ -90,7 +90,7 @@
     searchValue = value
     start = 0
     page = 1
-    loadData()
+    loadData(true)
 
   }
 
@@ -158,9 +158,7 @@
         <div class="col" >
           <TableSearch
             searchPlaceholder={searchPlaceholder}
-            by={searchBy}
-            value={searchValue}
-            searchList={columns.map(({title}) => title)}
+            columns={columns}
             onSearchChange={handleSearchChange}
           />
         </div>
@@ -193,7 +191,7 @@
           </thead>
         {/if}
         <tbody>
-          {#if rows}
+          {#if rows.length}
             {#each rows as row}
               <TableRow
                 row={row}

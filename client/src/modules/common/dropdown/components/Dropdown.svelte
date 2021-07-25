@@ -1,14 +1,20 @@
 <script lang="ts" >
+  import type { IDropdownLink } from './types'
   import { uuid } from '../../../lib/helpers'
-  export let links: IDropdownLinks[]
+  export let links: IDropdownLink[]
   export let trigger
   export let buttonClass: string
 
   const id = uuid()
   let show = false
 
-  function handleClick () {
+  function handleClick() {
     show = !show
+  }
+
+  function handleLinkClick(link: IDropdownLink) {
+    show = false
+    link.handleClick(link)
   }
 
 </script>
@@ -30,7 +36,7 @@
             </li>
           {:else if link.handleClick}
             <li>
-              <button type="button" class="dropdown-item" on:click={link.handleClick}>{link.label}</button>
+              <button type="button" class="dropdown-item" on:click={() => handleLinkClick(link)}>{link.label}</button>
             </li>
           {:else if link.to}
             <li>

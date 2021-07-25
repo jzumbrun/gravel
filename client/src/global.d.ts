@@ -3,11 +3,3 @@
 interface IRoute {
     controller: typeof SvelteComponentDev
 }
-
-interface IDropdownLinks {
-    text?: string
-    divider?: boolean
-    handleClick?: (e: Event) => void
-    label?: string
-    to?: string
-}

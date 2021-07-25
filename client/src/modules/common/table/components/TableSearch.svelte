@@ -1,34 +1,38 @@
 <script lang="ts">
   import Dropdown from '../../dropdown/components/Dropdown.svelte'
+  import type { IDropdownLink } from '../../dropdown/components/types'
+  import type { IColumn } from './types'
 
   export let onSearchChange: (by: string, value: string) => void
   export let searchPlaceholder: string
-  export let searchList: string[]
-  export let by: string
-  export let value: string
+  export let columns: IColumn[]
+  let value: string = ''
 
-  function handleBy(e: Event) {
-    debugger
-    by = (e.target as HTMLInputElement).value
-    onSearchChange(by, value)
+  function handleBy(link: IDropdownLink) {
+    if(value)
+      onSearchChange(link.value, value)
+  }
+
+  function handleClear(link: IDropdownLink) {
+      value = ''
+      onSearchChange('', '')
   }
 
 </script>
 
 <div class="input-group">
   <input 
-    type="search"
     class="form-control"
-    value={value}
+    bind:value={value}
     placeholder={searchPlaceholder}
   />
 
   <Dropdown
     trigger={{label: ''}}
     buttonClass="buttonClass"
-    links={searchList.map((text) => {
-      return {text, handleClick: handleBy}
-    })}
+    links={columns.map((col) => {
+      return {label: col.title, value: col.id, handleClick: handleBy}
+    }).concat([{label: '[Clear]', value: '', handleClick: handleClear}])}
   />
 </div>
 
