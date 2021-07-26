@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from 'svelte' 
+  import { onMount, SvelteComponent } from 'svelte' 
   import { subscribe } from '../../../lib/helpers'
   import { tableStore } from '../stores/TableStore'
   import TablePagination from './TablePagination.svelte'
@@ -34,7 +34,7 @@
   export let showSearch: boolean = true
   export let showEmpty: boolean = true
   export let searchPlaceholder: string = 'Search'
-  export let rowFormat: () => void = undefined
+  export let rowComponent: typeof SvelteComponent = undefined
   
   subscribe(tableStore, onDataSuccess, [`getData.success.${id}`, `setData.success.${id}`])
   subscribe(tableStore, onRefresh, `refresh.success.${id}`)
@@ -68,13 +68,13 @@
     setPageInfo()
   }
 
-  function onData(rows) {
+  function onData<T>(r): T {
 
     if (callbacks.onData) {
-      rows = callbacks.onData(rows)
+      r = callbacks.onData(r)
     }
 
-    return rows
+    return r
   }
 
   function handleLimitChange(e: InputEvent) {
@@ -188,11 +188,12 @@
         {/if}
         <tbody>
           {#if rows.length}
-            {#each rows as row}
+            {#each rows as row, index}
               <TableRow
+                index={index}
                 row={row}
                 columns={columns}
-                rowFormat={rowFormat}
+                component={rowComponent}
               />
             {/each}
           {:else}

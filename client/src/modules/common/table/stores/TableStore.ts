@@ -49,7 +49,7 @@ class TableStore extends Store<ITableStore> {
 
 			this.update(s => {
 				const [rows, total] = Object.values(results.data) as [any[], number]
-				return this.setStoreTable(s, 'home', rows, total !== undefined ? total: s.tables[id].total)
+				return this.setStoreTable(s, 'home', rows || [], total !== undefined ? total: s.tables[id].total)
 			}, `getData.success.${id}`)
 		} else {
 			this.update(s => s, `getData.success.${id}`)

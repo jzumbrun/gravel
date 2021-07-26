@@ -5,16 +5,13 @@
   import ThingOneModal from '../modals/ThingOneModal.svelte'
   import ThingTwoModal from '../modals/ThingTwoModal.svelte'
   import Table from '../../../common/table/components/Table.svelte'
-  import { tableStore } from '../../../common/table/stores/TableStore'
+  import CellFormat from './CellComponent.svelte';
+import RowComponent from './RowComponent.svelte';
 
   const query = 'query users($collation: Collation){ users(collation: $collation ) { _id firstName email } <total>usersTotal(collation: $collation)</total> }'
 
   onMount(() => {
     userStore.validateAuth()
-    // tableStore.setData('home', [{
-    //   thing1: '1',
-    //   thing2: '2'
-    // }])
   })
 
   
@@ -37,10 +34,11 @@
     title="things"
     columns={[
       { id: '_id', title: 'Id'},
-      { id: 'email', title: 'Email', sortable: true },
+      { id: 'email', title: 'Email', sortable: true, component: CellFormat },
       { id: 'firstName', title: 'First Name', sortable: true }
     ]}
     query={query}
+    rowComponent={RowComponent}
   />
 
   <div class="row mt-2">
