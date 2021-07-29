@@ -8,18 +8,18 @@
     password: ''
   }
   
-  subscribe(userStore, onUpdateSelfSuccess, 'updateSelf.success')
+  subscribe(userStore, onResetPasswordSuccess, 'resetPassword.success')
   
   onMount(() => {
     if (userStore.get().self._id) page('/')
   })
   
-  function onUpdateSelfSuccess() {
+  function onResetPasswordSuccess() {
     page('/')
   }
   
   function handleSubmit(){
-    userStore.updateSelf(form)
+    userStore.resetPassword(form)
   }
   
   </script>

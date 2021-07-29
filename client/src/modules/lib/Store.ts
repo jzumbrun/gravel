@@ -1,5 +1,5 @@
 import { writable, get,  Writable, Subscriber, Updater } from 'svelte/store'
-
+import { errors } from './Errors'
 
 /**
  * Store
@@ -65,7 +65,13 @@ export default class Store<T = any> {
       },
       body: JSON.stringify({ query, variables })
     })
-    return response.json()
+    const jsonResponse = await response.json()
+    if(jsonResponse?.errors?.length) {
+      errors.add(jsonResponse?.errors)
+    }
+    
+    return jsonResponse
+
   }
 
 }

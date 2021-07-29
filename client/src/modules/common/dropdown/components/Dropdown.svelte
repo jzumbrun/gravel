@@ -3,7 +3,7 @@
   import { uuid } from '../../../lib/helpers'
   export let links: IDropdownLink[]
   export let trigger
-  export let buttonClass: string
+  export let buttonClass: string = ''
 
   const id = uuid()
   let show = false

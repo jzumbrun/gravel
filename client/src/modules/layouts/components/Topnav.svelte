@@ -5,11 +5,15 @@
   import Dropdown from '../../common/dropdown/components/Dropdown.svelte'
   import { subscribe } from '../../lib/helpers'
   import Alerts from '../../common/alerts/components/Alerts.svelte'
+  import { events } from '../../lib/Events'
 
   subscribe(userStore, onSignOutSuccess, 'signOut.success')
 
   onMount(() => {
-  userStore.loadToken()
+    userStore.loadToken()
+    events.subscribe('userStore.token.error', () => {
+      userStore.signOut()
+    })
   })
 
   function onSignOutSuccess() {

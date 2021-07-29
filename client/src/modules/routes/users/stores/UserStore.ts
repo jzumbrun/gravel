@@ -71,16 +71,39 @@ class UserStore extends Store<IUserStore> {
    * Update
    */
   async updateSelf({ firstName, lastName, email, password }: Pick<IUser, 'firstName' | 'lastName' | 'email' | 'password'>) {
+    const self = this.get().self
     const { data, errors } = await this.graphQl<{updateSelf?: { token: string }}>(
     `mutation updateSelf($firstName: NonEmptyString!, $lastName: NonEmptyString!, $email: Email!, $password: Password)
       { updateSelf(user: { firstName: $firstName, lastName: $lastName, email: $email, password: $password}) { token }}
     `,
-    { firstName, lastName, email, password })
+    { firstName: firstName || self.firstName,
+      lastName: lastName || self.lastName,
+      email : email || self.email,
+      password 
+    })
     if(errors) alertStore.add(errors)
     if(data?.updateSelf?.token) {
       localStorage.setItem('token', data.updateSelf.token)
       const self = this.getSelfFromToken()
       this.set({ self }, 'updateSelf.success')
+    }
+  }
+
+  /**
+   * ResetPassword
+   */
+    async resetPassword({ password }: Pick<IUser, 'firstName' | 'lastName' | 'email' | 'password'>) {
+    const self = this.get().self
+    const { data, errors } = await this.graphQl<{updateSelf?: { token: string }}>(
+    `mutation updateSelf($password: Password)
+      { updateSelf(user: { password: $password}) { token }}
+    `,
+    { password })
+    if(errors) alertStore.add(errors)
+    if(data?.updateSelf?.token) {
+      localStorage.setItem('token', data.updateSelf.token)
+      const self = this.getSelfFromToken()
+      this.set({ self }, 'resetPassword.success')
     }
   }
 
@@ -105,8 +128,8 @@ class UserStore extends Store<IUserStore> {
    * Sign Out
    */
   signOut() {
-      localStorage.removeItem('token')
-      this.set(this.default, 'signOut.success')
+    localStorage.removeItem('token')
+    this.set(this.default, 'signOut.success')
   }
 
   /**

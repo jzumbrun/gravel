@@ -12,7 +12,7 @@
       "mailer.url": "https://api.sparkpost.com/api/v1/transmissions",
       "mailer.authorization": "CHANGE_ME",
       "mailer.from": "CHANGE_ME",
-      "resetPassword.url": "http://localhost:8080/resetPassword?token="
+      "resetPassword.url": "http://localhost:5000/users/resetPassword?token="
   },
   "test": {
       "db.url": "CHANGE_ME"

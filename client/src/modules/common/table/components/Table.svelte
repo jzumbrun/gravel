@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, SvelteComponent } from 'svelte' 
+  import { onMount, afterUpdate, SvelteComponent } from 'svelte' 
   import { subscribe } from '../../../lib/helpers'
   import { tableStore } from '../stores/TableStore'
   import TablePagination from './TablePagination.svelte'
@@ -7,7 +7,7 @@
   import TableSearch from './TableSearch.svelte'
   import TableRow from './TableRow.svelte'
   import TableHeader from './TableHeader.svelte'
-  import type { IColumn } from './types'
+  import type { IColumn, ICollation } from './types'
 
   let start: number = 0
   let limit: number = 20
@@ -40,15 +40,41 @@
   subscribe(tableStore, onRefresh, `refresh.success.${id}`)
 
   onMount(() => {
+    loadSettings()
     loadData(true)
   })
 
-  function onRefresh(){
-    // Kill the state first WITHOUT a setState call
-    // so the table does not flash in and out
-    // But only if we do not have a unique id
-    if(!id) rows = []
+  afterUpdate(() => {
+    const key = `${id}.table.settings`
+	  localStorage.setItem(key, JSON.stringify({
+      limit, page, sortBy, sortDirection, searchBy, searchValue
+    }))
+  })
+
+  function onRefresh() {
     loadData(true)
+  }
+
+  function loadSettings() {
+    const key = `${id}.table.settings`
+    const settingsObjStorage = localStorage.getItem(key)
+    let settingsObj: ICollation = {}
+    if(settingsObjStorage) {
+      try {
+        settingsObj = JSON.parse(settingsObjStorage) as ICollation
+      } catch(err) {
+        settingsObj = {}
+      }
+    } else {
+      settingsObj = {}
+    }
+    limit = settingsObj.limit || limit
+    page = settingsObj.page || page
+    sortBy = settingsObj.sortBy || sortBy
+    sortDirection = settingsObj.sortDirection || sortDirection
+    searchBy = settingsObj.searchBy || searchBy
+    searchValue = settingsObj.searchValue || searchValue
+
   }
 
   function loadData(getTotal: boolean = false) {
