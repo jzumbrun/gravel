@@ -47,7 +47,7 @@
 
   .page-info {
     padding: 2px 8px;
-    margin: 0px 3px 0px 3px;
+    margin: 0px 0px 0px 0px;
   }
   
 </style>

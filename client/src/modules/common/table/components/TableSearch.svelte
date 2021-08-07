@@ -22,7 +22,7 @@
 
 <div class="input-group">
   <input 
-    class="form-control"
+    class="search form-control"
     bind:value={value}
     placeholder={searchPlaceholder}
   />

@@ -166,7 +166,7 @@
 
 
 {#if show}
-  <div class="table-component mt-4 mb-4">
+  <div class="table-component mt-4 mb-2">
     <div class="d-flex row row-cols-auto">
       
       {#if title}
@@ -176,7 +176,7 @@
       {/if}
     
       {#if showSearch}
-        <div class="col" >
+        <div class="col search-top" >
           <TableSearch
             searchPlaceholder={searchPlaceholder}
             columns={columns}
@@ -229,15 +229,31 @@
       </table>
 
     </div>
+    <div class="d-flex row row-cols-auto">
 
-    {#if showPagination && total > limit}
-      <TablePagination
-        pageInfo={pageInfo}
-        onChange={handlePageChange}
-        page={page}
-        pages={pages}
-      />
-    {/if}
+      {#if showPagination}
+        <div class="col flex-grow-1 mt-1" >
+          <TablePagination
+            pageInfo={pageInfo}
+            onChange={handlePageChange}
+            page={page}
+            pages={pages}
+          />
+        </div>
+        
+      {/if}
+      {#if showSearch}
+        <div class="col search-bottom mt-1" >
+          <TableSearch
+            searchPlaceholder={searchPlaceholder}
+            columns={columns}
+            onChange={handleSearchChange}
+          />
+        </div>
+      {/if}
+
+    </div>
+    
   </div>
 {/if}
 
@@ -248,7 +264,6 @@
     table-layout: fixed;
     border: none;
   }
-
   .container {
     border: 1px solid rgba(255,255,255,.4);
     border-radius: 0.5rem;
@@ -284,26 +299,20 @@
     border: none;
   }
 
+  @media screen and (min-width: 39.9375em) {
+    .search-bottom {
+      display: none;
+    }
+  }
+
   @media screen and (max-width: 39.9375em) {
-    table thead {
+
+    .search-top {
       display: none;
     }
 
-    table td {
-      font-size: 1.10em;
-      font-weight: normal;
-      width: 100%;
-      text-align: center;
-      margin: auto;
-      display: block;
-    }
-
-    table td:first-child {
-      padding-top: 15px;
-    }
-
-    table td:last-child {
-      padding-bottom: 15px;
+    table thead {
+      display: none;
     }
 
   }

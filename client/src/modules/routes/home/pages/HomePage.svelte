@@ -41,7 +41,7 @@ import RowComponent from './RowComponent.svelte';
     rowComponent={RowComponent}
   />
 
-  <div class="row mt-2">
+  <div class="row">
     <a href="/about">About</a>
   </div>
 </main>
