@@ -6,7 +6,7 @@
   export let onChange: (by: string, value: string) => void
   export let searchPlaceholder: string
   export let columns: IColumn[]
-  let value: string = ''
+  export let value: string = ''
 
   function handleBy(link: IDropdownLink) {
     if(value)

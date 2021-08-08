@@ -37,11 +37,11 @@
     </h1>
     <div class="form-group mt-2">
       <label for="firstName">Firt Name</label>
-      <input type="lastName" class="form-control" bind:value={form.firstName} />
+      <input type="text" class="form-control" bind:value={form.firstName} />
     </div>
     <div class="form-group mt-2">
-      <label for="password">Last Name</label>
-      <input type="password" class="form-control" bind:value={form.lastName} />
+      <label for="lastName">Last Name</label>
+      <input type="text" class="form-control" bind:value={form.lastName} />
     </div>
     <div class="form-group mt-2">
       <label for="email">Email Address</label>

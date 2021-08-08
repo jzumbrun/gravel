@@ -6,7 +6,8 @@ class Config {
     constructor() {
         this.state = config.default
         this.state.env = process.env.NODE_ENV || 'test'
-        Object.assign(this.state, (config as any)[this.state.env])        
+        Object.assign(this.state, (config as any)[this.state.env])
+        console.log('@@Config@@', this.state)      
     }
 
     /**

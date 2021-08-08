@@ -178,6 +178,7 @@
       {#if showSearch}
         <div class="col search-top" >
           <TableSearch
+            value={searchValue}
             searchPlaceholder={searchPlaceholder}
             columns={columns}
             onChange={handleSearchChange}
@@ -245,6 +246,7 @@
       {#if showSearch}
         <div class="col search-bottom mt-1" >
           <TableSearch
+            value={searchValue}
             searchPlaceholder={searchPlaceholder}
             columns={columns}
             onChange={handleSearchChange}
